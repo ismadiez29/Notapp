@@ -11,4 +11,7 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="my_notes">My notes</string>
+    <string name="note_title">Note Title</string>
+    <string name="note_subtitle">Note Subtitle</string>
+    <string name="type_note_here">Type note here...</string>
 </resources>

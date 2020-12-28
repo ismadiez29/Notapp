@@ -10,7 +10,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Notas">
         <activity
+            android:name=".CreateNoteActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden">
+        </activity>
+        <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateHidden"
             android:label="@string/app_name"
             android:theme="@style/Theme.Notas.NoActionBar">
             <intent-filter>

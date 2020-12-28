@@ -1,7 +1,12 @@
 package com.example.notas
 
+import android.content.ContentProvider
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
+import android.widget.ImageView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.navigation.NavigationView
@@ -18,17 +23,16 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
 
+    companion object{
+        val REQUEST_CODE_ADD_NOTE = 1;
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        val fab: FloatingActionButton = findViewById(R.id.fab)
-        fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
-        }
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
@@ -38,6 +42,18 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        var imageAddNoteMain: ImageView
+        imageAddNoteMain = ImageView(this)
+
+        imageAddNoteMain.setOnClickListener(object : View.OnClickListener {
+            override fun onClick(view: View?) {
+                // Do some work here
+                val intent = Intent(applicationContext, CreateNoteActivity::class.java)
+                startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
+
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
