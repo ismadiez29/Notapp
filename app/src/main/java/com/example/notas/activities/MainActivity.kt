@@ -1,7 +1,9 @@
 package com.example.notas.activities
 
 import android.content.Intent
+import android.os.AsyncTask
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
 import android.widget.ImageView
 import com.google.android.material.navigation.NavigationView
@@ -14,6 +16,8 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import com.example.notas.R
+import com.example.notas.database.NotesDatabase
+import com.example.notas.entities.Note
 
 class MainActivity : AppCompatActivity() {
 
@@ -45,6 +49,7 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, CreateNoteActivity::class.java)
             startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
         }
+        getNotes()
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -56,5 +61,20 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    private fun getNotes(){
+        class GetNoteTask : AsyncTask<Void, Void, List<Note>>() {
+            override fun doInBackground(vararg params: Void?): List<Note>? {
+                return NotesDatabase.getDatabase(getApplicationContext()).noteDao().getAllNotes();
+
+            }
+
+             override fun onPostExecute(notes: List<Note>?) {
+                super.onPostExecute(notes)
+                Log.d("MY_NOTES", notes.toString())
+            }
+        }
+        GetNoteTask().execute();
     }
 }
