@@ -43,17 +43,12 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        var imageAddNoteMain: ImageView
-        imageAddNoteMain = ImageView(this)
+        var imageAddNoteMain: ImageView = findViewById(R.id.imageAddNoteMain)
 
-        imageAddNoteMain.setOnClickListener(object : View.OnClickListener {
-            override fun onClick(view: View?) {
-                // Do some work here
-                val intent = Intent(applicationContext, CreateNoteActivity::class.java)
-                startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
-
-            }
-        })
+        imageAddNoteMain.setOnClickListener {
+            val intent = Intent(this, CreateNoteActivity::class.java)
+            startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
