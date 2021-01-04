@@ -9,7 +9,12 @@ import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.room.DatabaseConfiguration
+import androidx.room.InvalidationTracker
+import androidx.room.Room
+import androidx.sqlite.db.SupportSQLiteOpenHelper
 import com.example.notas.R
+import com.example.notas.dao.NoteDao
 import com.example.notas.database.NotesDatabase
 import com.example.notas.entities.Note
 import java.lang.String.format
@@ -60,7 +65,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
         class SaveNoteTask : AsyncTask<Void, Void, Void>() {
             override fun doInBackground(vararg params: Void?): Void? {
-                NotesDatabase.getDatabase(getApplicationContext()).noteDao().insertNote(note);
+                NotesDatabase.db.getDatabase(applicationContext).noteDao().insertNote(note)
                 return null;
             }
 

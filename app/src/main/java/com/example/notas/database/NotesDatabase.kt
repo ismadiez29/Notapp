@@ -8,19 +8,30 @@ import com.example.notas.dao.NoteDao
 import com.example.notas.entities.Note
 
 @Database(entities = [Note::class], version = 1, exportSchema = false)
-public abstract class NotesDatabase : RoomDatabase() {
-    private var notesDatabase: NotesDatabase? = null
+abstract class NotesDatabase : RoomDatabase() {
 
-    @Synchronized
-    open fun getDatabase(context: Context?): NotesDatabase? {
-        if (notesDatabase == null) {
+    var notesDatabase : NotesDatabase? = null
+ object db{
+    //lateinit var notesDatabase: NotesDatabase
+    fun getDatabase(context: Context): NotesDatabase {
+
+        var notesDB = Room.databaseBuilder(
+                context,
+                NotesDatabase::class.java,
+                "notes_db"
+        ).build()
+        return notesDB
+    }
+}
+
+    fun getDatabase(context: Context): NotesDatabase? {
             notesDatabase = Room.databaseBuilder(
-                    context!!,
+                    context,
                     NotesDatabase::class.java,
                     "notes_db"
             ).build()
-        }
+
         return notesDatabase
     }
-    abstract fun noteDao(): NoteDao?
+    abstract fun noteDao(): NoteDao
 }

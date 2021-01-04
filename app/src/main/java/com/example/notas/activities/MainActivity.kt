@@ -15,13 +15,22 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.notas.R
+import com.example.notas.adapters.NotesAdapter
+import com.example.notas.adapters.nA
 import com.example.notas.database.NotesDatabase
 import com.example.notas.entities.Note
+import java.util.Collections.addAll
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
+
+    private lateinit var notesRecyclerView : RecyclerView
+    private var notelist = mutableListOf<Note>()
+    private lateinit var notesAdapter: NotesAdapter
 
     companion object{
         val REQUEST_CODE_ADD_NOTE = 1;
@@ -49,6 +58,13 @@ class MainActivity : AppCompatActivity() {
             val intent = Intent(this, CreateNoteActivity::class.java)
             startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
         }
+        notesRecyclerView = findViewById(R.id.notesRecyclerView)
+        notesRecyclerView.layoutManager = StaggeredGridLayoutManager(2,StaggeredGridLayoutManager.VERTICAL)
+
+        notelist = ArrayList<Note>()
+        notesAdapter = NotesAdapter(notelist as ArrayList<Note>)
+        notesRecyclerView.adapter = notesAdapter
+
         getNotes()
     }
 
@@ -65,16 +81,30 @@ class MainActivity : AppCompatActivity() {
 
     private fun getNotes(){
         class GetNoteTask : AsyncTask<Void, Void, List<Note>>() {
-            override fun doInBackground(vararg params: Void?): List<Note>? {
-                return NotesDatabase.getDatabase(getApplicationContext()).noteDao().getAllNotes();
+            override fun doInBackground(vararg params: Void?): List<Note> {
+                return NotesDatabase.db.getDatabase(applicationContext).noteDao().getAllNotes();
 
             }
 
-             override fun onPostExecute(notes: List<Note>?) {
+             override fun onPostExecute(notes: List<Note>) {
                 super.onPostExecute(notes)
-                Log.d("MY_NOTES", notes.toString())
+                 if (notelist.size == 0){
+                     notelist.addAll(notes)
+                     notesAdapter.notifyDataSetChanged();
+                 } else {
+                     notelist.add(0,notes.get(0))
+                     notesAdapter.notifyItemInserted(0)
+                 }
+                 notesRecyclerView.smoothScrollToPosition(0)
             }
         }
         GetNoteTask().execute();
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode ==  REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK){
+            getNotes()
+        }
     }
 }
