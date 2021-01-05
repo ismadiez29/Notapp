@@ -1,8 +1,12 @@
 package com.example.notas.adapters
 
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.GradientDrawable
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notas.R
@@ -41,6 +45,8 @@ class NotesAdapter(notelist: ArrayList<Note>) : RecyclerView.Adapter<NotesAdapte
         var textTitle: TextView
         var textSubtitle: TextView
         var textDateTime: TextView
+        lateinit var layoutNote : LinearLayout
+
         fun setNote(note: Note) {
             textTitle.text = note.getTitle()
             if (note.getSubtitle()!!.trim { it <= ' ' }.isEmpty()) {
@@ -49,12 +55,20 @@ class NotesAdapter(notelist: ArrayList<Note>) : RecyclerView.Adapter<NotesAdapte
                 textSubtitle.text = note.getSubtitle()
             }
             textDateTime.text = note.getDateTime()
+
+            var gradientDrawable : ColorDrawable = layoutNote.background as ColorDrawable
+            if (note.getColor() != null){
+                gradientDrawable.color = Color.parseColor(note.getColor())
+            } else {
+                gradientDrawable.color = Color.parseColor("#333333")
+            }
         }
 
         init {
             textTitle = itemView.findViewById(R.id.textTitle)
             textSubtitle = itemView.findViewById(R.id.textSubtitle)
             textDateTime = itemView.findViewById(R.id.textDateTime)
+            layoutNote = itemView.findViewById(R.id.layoutNote)
         }
     }
 }
