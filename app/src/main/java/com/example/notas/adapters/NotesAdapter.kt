@@ -1,5 +1,6 @@
 package com.example.notas.adapters
 
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
@@ -11,6 +12,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notas.R
 import com.example.notas.entities.Note
+import com.makeramen.roundedimageview.RoundedImageView
 
 class NotesAdapter(notelist: ArrayList<Note>) : RecyclerView.Adapter<NotesAdapter.NoteViewHolder>() {
     private var notes: List<Note>? = notelist
@@ -46,6 +48,8 @@ class NotesAdapter(notelist: ArrayList<Note>) : RecyclerView.Adapter<NotesAdapte
         var textSubtitle: TextView
         var textDateTime: TextView
         lateinit var layoutNote : LinearLayout
+        lateinit var imageNote : RoundedImageView
+
 
         fun setNote(note: Note) {
             textTitle.text = note.getTitle()
@@ -62,6 +66,12 @@ class NotesAdapter(notelist: ArrayList<Note>) : RecyclerView.Adapter<NotesAdapte
             } else {
                 gradientDrawable.color = Color.parseColor("#333333")
             }
+            if (note.getImagePath() != null) {
+                imageNote.setImageBitmap(BitmapFactory.decodeFile(note.getImagePath()))
+                imageNote.visibility = View.VISIBLE
+            } else {
+                imageNote.visibility = View.GONE
+            }
         }
 
         init {
@@ -69,6 +79,7 @@ class NotesAdapter(notelist: ArrayList<Note>) : RecyclerView.Adapter<NotesAdapte
             textSubtitle = itemView.findViewById(R.id.textSubtitle)
             textDateTime = itemView.findViewById(R.id.textDateTime)
             layoutNote = itemView.findViewById(R.id.layoutNote)
+            imageNote = itemView.findViewById(R.id.imageNote)
         }
     }
 }
