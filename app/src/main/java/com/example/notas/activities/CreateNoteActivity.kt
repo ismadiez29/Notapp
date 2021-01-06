@@ -2,50 +2,49 @@ package com.example.notas.activities
 
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.content.res.ColorStateList
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.AsyncTask
-import android.os.Build
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Patterns
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.*
-import androidx.annotation.RequiresApi
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.room.DatabaseConfiguration
-import androidx.room.InvalidationTracker
-import androidx.room.Room
-import androidx.sqlite.db.SupportSQLiteOpenHelper
 import com.example.notas.R
-import com.example.notas.dao.NoteDao
 import com.example.notas.database.NotesDatabase
 import com.example.notas.entities.Note
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.io.InputStream
-import java.lang.String.format
 import java.text.SimpleDateFormat
 import java.util.*
-import java.util.jar.Manifest
 
 class CreateNoteActivity : AppCompatActivity() {
 
-    private lateinit var inputNoteTitle : EditText
-    private lateinit var inputNoteSubTitle : EditText
-    private lateinit var inputNoteText : EditText
-    private lateinit var textDateTime : TextView
-    lateinit var imageNote :ImageView
-    lateinit var selectedColor : String
-    lateinit var viewSubtitleIndicator : View
-    lateinit var selectedImagePath : String
+    private lateinit var inputNoteTitle: EditText
+    private lateinit var inputNoteSubTitle: EditText
+    private lateinit var inputNoteText: EditText
+    private lateinit var textDateTime: TextView
+    lateinit var imageNote: ImageView
+    lateinit var selectedColor: String
+    lateinit var viewSubtitleIndicator: View
+    lateinit var selectedImagePath: String
+    lateinit var textWebURL: TextView
+    lateinit var layoutWebURL: LinearLayout
 
-    companion object{
+    lateinit var dialogAddURL: AlertDialog
+
+    companion object {
         val REQUEST_CODE_STORAGE_PERMISSION = 1;
         val REQUEST_CODE_SELECT_IMAGE = 2;
     }
@@ -60,13 +59,15 @@ class CreateNoteActivity : AppCompatActivity() {
         textDateTime = findViewById(R.id.textDateTime)
         viewSubtitleIndicator = findViewById(R.id.viewSubtitleIndicator)
         imageNote = findViewById(R.id.imageNote)
+        textWebURL = findViewById(R.id.textWebURL)
+        layoutWebURL = findViewById(R.id.layoutWebURL)
 
         val imageBack = findViewById<ImageView>(R.id.imageBack)
         imageBack.setOnClickListener { onBackPressed() }
         textDateTime.text = (
                 SimpleDateFormat("EEEE, dd MMM yyyy HH:mm", Locale.getDefault())
-                .format(Date())
-        )
+                        .format(Date())
+                )
 
         var imageSave: ImageView = findViewById(R.id.imageSave)
 
@@ -81,11 +82,11 @@ class CreateNoteActivity : AppCompatActivity() {
         setSubtitleIndicatorColor()
     }
 
-    private fun saveNote(){
+    private fun saveNote() {
 
         if (inputNoteTitle?.text.toString().trim().isEmpty() &&
                 inputNoteSubTitle?.text.toString().trim().isEmpty() &&
-                inputNoteText?.text.toString().trim().isEmpty()){
+                inputNoteText?.text.toString().trim().isEmpty()) {
             Toast.makeText(this, "Note cannot be empty", Toast.LENGTH_SHORT).show()
         }
         val note = Note();
@@ -96,6 +97,10 @@ class CreateNoteActivity : AppCompatActivity() {
         note.setColor(selectedColor)
         note.setImagePath(selectedImagePath)
 
+        if (layoutWebURL.visibility == View.VISIBLE){
+            note.setWebLink(textWebURL.text.toString())
+        }
+
         class SaveNoteTask : AsyncTask<Void, Void, Void>() {
             override fun doInBackground(vararg params: Void?): Void? {
                 NotesDatabase.db.getDatabase(applicationContext).noteDao().insertNote(note)
@@ -104,7 +109,7 @@ class CreateNoteActivity : AppCompatActivity() {
 
             override fun onPostExecute(result: Void?) {
                 super.onPostExecute(result)
-                var intent : Intent
+                var intent: Intent
                 setResult(RESULT_OK);
                 finish()
             }
@@ -115,20 +120,20 @@ class CreateNoteActivity : AppCompatActivity() {
     fun initMiscellaneous() {
         val layoutMiscellaneous = findViewById<LinearLayout>(R.id.layoutMiscellaneous)
         val bottomSheetBehavior = BottomSheetBehavior.from(layoutMiscellaneous)
-        layoutMiscellaneous.findViewById<TextView>(R.id.textMiscellaneous).setOnClickListener{
-            if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED){
+        layoutMiscellaneous.findViewById<TextView>(R.id.textMiscellaneous).setOnClickListener {
+            if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED) {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
             } else {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             }
         }
-        val imageColor1 : ImageView = layoutMiscellaneous.findViewById(R.id.imageColor1)
-        val imageColor2 : ImageView = layoutMiscellaneous.findViewById(R.id.imageColor2)
-        val imageColor3 : ImageView = layoutMiscellaneous.findViewById(R.id.imageColor3)
-        val imageColor4 : ImageView = layoutMiscellaneous.findViewById(R.id.imageColor4)
+        val imageColor1: ImageView = layoutMiscellaneous.findViewById(R.id.imageColor1)
+        val imageColor2: ImageView = layoutMiscellaneous.findViewById(R.id.imageColor2)
+        val imageColor3: ImageView = layoutMiscellaneous.findViewById(R.id.imageColor3)
+        val imageColor4: ImageView = layoutMiscellaneous.findViewById(R.id.imageColor4)
 
 
-        layoutMiscellaneous.findViewById<View>(R.id.viewColor1).setOnClickListener{
+        layoutMiscellaneous.findViewById<View>(R.id.viewColor1).setOnClickListener {
             selectedColor = "#333333"
             imageColor1.setImageResource(R.drawable.ic_done)
             imageColor2.setImageResource(0)
@@ -137,7 +142,7 @@ class CreateNoteActivity : AppCompatActivity() {
             setSubtitleIndicatorColor()
         }
 
-        layoutMiscellaneous.findViewById<View>(R.id.viewColor2).setOnClickListener{
+        layoutMiscellaneous.findViewById<View>(R.id.viewColor2).setOnClickListener {
             selectedColor = "#FDBE3B"
             imageColor1.setImageResource(0)
             imageColor2.setImageResource(R.drawable.ic_done)
@@ -146,7 +151,7 @@ class CreateNoteActivity : AppCompatActivity() {
             setSubtitleIndicatorColor()
         }
 
-        layoutMiscellaneous.findViewById<View>(R.id.viewColor3).setOnClickListener{
+        layoutMiscellaneous.findViewById<View>(R.id.viewColor3).setOnClickListener {
             selectedColor = "#FF4842"
             imageColor1.setImageResource(0)
             imageColor2.setImageResource(0)
@@ -155,7 +160,7 @@ class CreateNoteActivity : AppCompatActivity() {
             setSubtitleIndicatorColor()
         }
 
-        layoutMiscellaneous.findViewById<View>(R.id.viewColor4).setOnClickListener{
+        layoutMiscellaneous.findViewById<View>(R.id.viewColor4).setOnClickListener {
             selectedColor = "#3A52FC"
             imageColor1.setImageResource(0)
             imageColor2.setImageResource(0)
@@ -164,59 +169,65 @@ class CreateNoteActivity : AppCompatActivity() {
             setSubtitleIndicatorColor()
         }
 
-        layoutMiscellaneous.findViewById<LinearLayout>(R.id.layoutAddImage).setOnClickListener(){
+        layoutMiscellaneous.findViewById<LinearLayout>(R.id.layoutAddImage).setOnClickListener() {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             if (ContextCompat.checkSelfPermission(
-                    applicationContext, android.Manifest.permission.READ_EXTERNAL_STORAGE
-            ) != PackageManager.PERMISSION_GRANTED) {
+                            applicationContext, android.Manifest.permission.READ_EXTERNAL_STORAGE
+                    ) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(this,
-                Array(1){android.Manifest.permission.READ_EXTERNAL_STORAGE},
-                REQUEST_CODE_STORAGE_PERMISSION)
+                        Array(1) { android.Manifest.permission.READ_EXTERNAL_STORAGE },
+                        REQUEST_CODE_STORAGE_PERMISSION)
             } else {
                 selectImage()
             }
         }
+
+        layoutMiscellaneous.findViewById<LinearLayout>(R.id.layoutAddUrl).setOnClickListener(){
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            showAddURLDialog()
+        }
     }
 
-    private fun setSubtitleIndicatorColor(){
-        var gradientDrawable : GradientDrawable = viewSubtitleIndicator.background as GradientDrawable
+    private fun setSubtitleIndicatorColor() {
+        var gradientDrawable: GradientDrawable = viewSubtitleIndicator.background as GradientDrawable
         gradientDrawable.setColor(Color.parseColor(selectedColor))
     }
 
     fun selectImage() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        if (intent.resolveActivity(packageManager) != null){
+        if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE)
         }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if(requestCode == REQUEST_CODE_STORAGE_PERMISSION && grantResults.isNotEmpty()) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED){
+        if (requestCode == REQUEST_CODE_STORAGE_PERMISSION && grantResults.isNotEmpty()) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 selectImage()
             } else {
                 Toast.makeText(this, "Permission Denied!", Toast.LENGTH_SHORT).show()
             }
         }
     }
+
     //Handling the result for the selected image
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK){
-            if (data != null){
-                var selectedImageUri : Uri? = data.data
+        if (requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK) {
+            if (data != null) {
+                var selectedImageUri: Uri? = data.data
                 if (selectedImageUri != null) {
                     try {
-                        var inputStream : InputStream? = contentResolver.openInputStream(selectedImageUri)
-                        var bitmap : Bitmap = BitmapFactory.decodeStream(inputStream)
+                        var inputStream: InputStream? = contentResolver.openInputStream(selectedImageUri)
+                        var bitmap: Bitmap = BitmapFactory.decodeStream(inputStream)
                         imageNote.setImageBitmap(bitmap)
                         imageNote.visibility = View.VISIBLE
 
                         selectedImagePath = getPathFromUri(selectedImageUri)
 
-                    }catch (exception : Exception){
-                        Toast.makeText(this,exception.message, Toast.LENGTH_SHORT).show()
+                    } catch (exception: Exception) {
+                        Toast.makeText(this, exception.message, Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -224,9 +235,9 @@ class CreateNoteActivity : AppCompatActivity() {
     }
 
     fun getPathFromUri(contentUri: Uri): String {
-        var filePath : String
-        var cursor : Cursor? = contentResolver
-                .query(contentUri,null,null,null,null)
+        var filePath: String
+        var cursor: Cursor? = contentResolver
+                .query(contentUri, null, null, null, null)
         if (cursor == null) {
             filePath = contentUri.path.toString()
         } else {
@@ -237,4 +248,38 @@ class CreateNoteActivity : AppCompatActivity() {
         }
         return filePath
     }
+
+    fun showAddURLDialog(){
+        //if (dialogAddURL == null){
+            var builder : AlertDialog.Builder = AlertDialog.Builder(this)
+            var view : View = LayoutInflater.from(this).inflate(
+                    R.layout.layout_add_url,
+                    findViewById<ViewGroup>(R.id.layoutAddUrlContainer)
+            )
+            builder.setView(view)
+            dialogAddURL = builder.create()
+            if (dialogAddURL.window != null){
+                dialogAddURL.window!!.setBackgroundDrawable(ColorDrawable(0))
+            }
+            val inputURL : EditText = view.findViewById(R.id.inputUrl)
+            inputURL.requestFocus()
+
+            view.findViewById<TextView>(R.id.textAdd).setOnClickListener(){
+                if (inputURL.text.toString().trim().isEmpty()){
+                    Toast.makeText(this,"Enter URL",Toast.LENGTH_SHORT).show()
+                } else if (!Patterns.WEB_URL.matcher(inputURL.text.toString()).matches()){
+                    Toast.makeText(this, "Enter valid URL", Toast.LENGTH_SHORT).show()
+                } else {
+                    textWebURL.setText(inputURL.text.toString())
+                    layoutWebURL.visibility = View.VISIBLE
+                    dialogAddURL.dismiss()
+                }
+            }
+            view.findViewById<TextView>(R.id.textCancel).setOnClickListener(){
+                dialogAddURL.dismiss()
+            }
+        //}
+        dialogAddURL.show()
+    }
+
 }
