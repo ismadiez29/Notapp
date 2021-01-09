@@ -3,7 +3,7 @@ package com.example.notas.adapters
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
-import android.graphics.drawable.GradientDrawable
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,12 +12,25 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notas.R
 import com.example.notas.entities.Note
+import com.example.notas.listeners.NotesListener
 import com.makeramen.roundedimageview.RoundedImageView
+import java.util.*
+import java.util.logging.Handler
 
-class NotesAdapter(notelist: ArrayList<Note>) : RecyclerView.Adapter<NotesAdapter.NoteViewHolder>() {
+class NotesAdapter(notelist: List<Note>, notesListener: NotesListener) : RecyclerView.Adapter<NotesAdapter.NoteViewHolder>() {
     private var notes: List<Note>? = notelist
+    var notesListener: NotesListener
+    private var timer: Timer? = null
+    private var notesSource: List<Note>
 
-    fun NotesAdapter(notes: List<Note>?) {
+
+    init {
+        this.notes = notelist
+        this.notesListener = notesListener
+        notesSource = notelist
+    }
+
+    fun NotesAdapter(notes: List<Note>?, notesListener: NotesListener) {
         this.notes = notes
     }
 
@@ -33,6 +46,9 @@ class NotesAdapter(notelist: ArrayList<Note>) : RecyclerView.Adapter<NotesAdapte
 
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         holder.setNote(notes!![position])
+        holder.layoutNote.setOnClickListener(){
+            notesListener.onNoteClicked(notes!!.get(position), position)
+        }
     }
 
     override fun getItemCount(): Int {
@@ -61,11 +77,14 @@ class NotesAdapter(notelist: ArrayList<Note>) : RecyclerView.Adapter<NotesAdapte
             textDateTime.text = note.getDateTime()
 
             var gradientDrawable : ColorDrawable = layoutNote.background as ColorDrawable
-            if (note.getColor() != null){
-                gradientDrawable.color = Color.parseColor(note.getColor())
-            } else {
-                gradientDrawable.color = Color.parseColor("#333333")
-            }
+            //if (note.getColor() != null){
+                //gradientDrawable.color = Color.parseColor(note.getColor())
+                //System.out.println(gradientDrawable.color)
+                (layoutNote.background as ColorDrawable).color = Color.parseColor(note.getColor())
+            System.out.println(Color.parseColor(note.getColor()))
+            //} else {
+                //gradientDrawable.color = Color.parseColor("#FFFFFF")
+            //}
             if (note.getImagePath() != null) {
                 imageNote.setImageBitmap(BitmapFactory.decodeFile(note.getImagePath()))
                 imageNote.visibility = View.VISIBLE
@@ -82,4 +101,35 @@ class NotesAdapter(notelist: ArrayList<Note>) : RecyclerView.Adapter<NotesAdapte
             imageNote = itemView.findViewById(R.id.imageNote)
         }
     }
+
+    fun searchNotes(searchKeyword: String){
+        timer = Timer()
+        timer!!.schedule(object : TimerTask() {
+            override fun run() {
+                if (searchKeyword.trim().isEmpty()) {
+                   notes = notesSource
+                } else {
+                    var temp = ArrayList<Note>()
+                    for (note : Note in notesSource) {
+                        if (note.getTitle()!!.toLowerCase().contains(searchKeyword.toLowerCase())
+                                || note.getSubtitle()!!.toLowerCase().contains(searchKeyword.toLowerCase())
+                                || note.getNoteText()!!.toLowerCase().contains(searchKeyword.toLowerCase())) {
+                            temp.add(note)
+                        }
+                    }
+                    notes = temp
+                }
+                val handler : android.os.Handler = android.os.Handler()
+                val runnable = Runnable {
+                    notifyDataSetChanged()
+                }
+                handler.post(runnable)
+            }
+        }, 500)
+    }
+
+    fun cancelTimer(){
+        timer?.cancel()
+    }
+
 }

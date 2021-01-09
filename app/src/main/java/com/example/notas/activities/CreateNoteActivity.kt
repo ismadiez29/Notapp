@@ -21,8 +21,10 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+
 import com.example.notas.R
 import com.example.notas.database.NotesDatabase
+import com.example.notas.database.NotesDatabase.db.getDatabase
 import com.example.notas.entities.Note
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import java.io.InputStream
@@ -43,6 +45,9 @@ class CreateNoteActivity : AppCompatActivity() {
     lateinit var layoutWebURL: LinearLayout
 
     lateinit var dialogAddURL: AlertDialog
+    private lateinit var dialogDeleteNote: AlertDialog
+
+    private lateinit var alreadyAvailableNote: Note
 
     companion object {
         val REQUEST_CODE_STORAGE_PERMISSION = 1;
@@ -77,28 +82,71 @@ class CreateNoteActivity : AppCompatActivity() {
 
         selectedColor = "#333333" //Default note color
         selectedImagePath = ""
+        System.out.println("nice")
+        if (intent.getBooleanExtra("isViewOrUpdate", false)){
+            alreadyAvailableNote = intent.getSerializableExtra("note") as Note
+            setViewOrUpdateNote()
+        }else{
+            alreadyAvailableNote = Note()
+        }
+
+        findViewById<ImageView>(R.id.imageRemoveWebURL).setOnClickListener(){
+            textWebURL.setText(null)
+            layoutWebURL.visibility = View.GONE
+        }
+
+        findViewById<ImageView>(R.id.imageRemoveImage).setOnClickListener(){
+            imageNote.setImageBitmap(null)
+            imageNote.visibility = View.GONE
+            findViewById<ImageView>(R.id.imageRemoveImage).visibility = View.GONE
+            selectedImagePath = ""
+        }
 
         initMiscellaneous()
         setSubtitleIndicatorColor()
     }
 
+    fun setViewOrUpdateNote(){
+        inputNoteTitle.setText(alreadyAvailableNote.getTitle())
+        inputNoteSubTitle.setText(alreadyAvailableNote.getSubtitle())
+        inputNoteText.setText(alreadyAvailableNote.getNoteText())
+        textDateTime.setText(alreadyAvailableNote.getDateTime())
+
+        if (alreadyAvailableNote.getImagePath() != null && !alreadyAvailableNote.getImagePath()!!.trim().isEmpty()){
+            imageNote.setImageBitmap(BitmapFactory.decodeFile(alreadyAvailableNote.getImagePath()))
+            imageNote.visibility = View.VISIBLE
+            findViewById<ImageView>(R.id.imageRemoveImage).visibility = View.VISIBLE
+            selectedImagePath = alreadyAvailableNote.getImagePath()!!
+        }
+
+        if (alreadyAvailableNote.getWebLink() != null && !alreadyAvailableNote.getWebLink()!!.trim().isEmpty()){
+            layoutWebURL.visibility = View.VISIBLE
+            textWebURL.text = alreadyAvailableNote.getWebLink()
+        }
+    }
+
     private fun saveNote() {
 
-        if (inputNoteTitle?.text.toString().trim().isEmpty() &&
-                inputNoteSubTitle?.text.toString().trim().isEmpty() &&
-                inputNoteText?.text.toString().trim().isEmpty()) {
+        if (inputNoteTitle.text.toString().trim().isEmpty() &&
+                inputNoteSubTitle.text.toString().trim().isEmpty() &&
+                inputNoteText.text.toString().trim().isEmpty()) {
             Toast.makeText(this, "Note cannot be empty", Toast.LENGTH_SHORT).show()
         }
         val note = Note();
-        note.setTitle(inputNoteTitle?.text.toString())
-        note.setSubtitle(inputNoteSubTitle?.text.toString())
-        note.setNoteText(inputNoteText?.text.toString())
-        note.setDateTime(textDateTime?.text.toString())
+        note.setTitle(inputNoteTitle.text.toString())
+        note.setSubtitle(inputNoteSubTitle.text.toString())
+        note.setNoteText(inputNoteText.text.toString())
+        note.setDateTime(textDateTime.text.toString())
         note.setColor(selectedColor)
         note.setImagePath(selectedImagePath)
 
         if (layoutWebURL.visibility == View.VISIBLE){
             note.setWebLink(textWebURL.text.toString())
+        }
+
+        //OnConflictStrategy is REPLACE meaning if new note has the same id of other in the db it will be replaced (updated)
+        if (alreadyAvailableNote != null){
+            note.setId(alreadyAvailableNote.getId())
         }
 
         class SaveNoteTask : AsyncTask<Void, Void, Void>() {
@@ -149,6 +197,7 @@ class CreateNoteActivity : AppCompatActivity() {
             imageColor3.setImageResource(0)
             imageColor4.setImageResource(0)
             setSubtitleIndicatorColor()
+
         }
 
         layoutMiscellaneous.findViewById<View>(R.id.viewColor3).setOnClickListener {
@@ -169,6 +218,17 @@ class CreateNoteActivity : AppCompatActivity() {
             setSubtitleIndicatorColor()
         }
 
+        if (alreadyAvailableNote.getColor() != null && !alreadyAvailableNote.getColor()!!.trim().isEmpty()){
+            when(alreadyAvailableNote.getColor()){
+
+                "#333333" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor1)
+                "#FDBE3B" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor2)
+                "#FF4842" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor3)
+                "#3A52FC" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor4)
+            }
+            setSubtitleIndicatorColor()
+        }
+
         layoutMiscellaneous.findViewById<LinearLayout>(R.id.layoutAddImage).setOnClickListener() {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             if (ContextCompat.checkSelfPermission(
@@ -186,6 +246,53 @@ class CreateNoteActivity : AppCompatActivity() {
             bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
             showAddURLDialog()
         }
+        //If is not null then the user is viewing or updating and we can display the delete button
+        if(alreadyAvailableNote != null){
+            layoutMiscellaneous.findViewById<LinearLayout>(R.id.layoutDeleteNote).visibility = View.VISIBLE
+            layoutMiscellaneous.findViewById<LinearLayout>(R.id.layoutDeleteNote).setOnClickListener(){
+                bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+                showDeleteNoteDialog()
+            }
+
+        }
+    }
+
+    private fun showDeleteNoteDialog(){
+        //if (dialogDeleteNote == null){
+            var builder: AlertDialog.Builder = AlertDialog.Builder(this)
+            var view: View = LayoutInflater.from(this).inflate(
+                    R.layout.layout_delete_note,
+                    findViewById(R.id.layoutDeleteNoteCOntainer)
+            )
+            builder.setView(view)
+            dialogDeleteNote = builder.create()
+            if (dialogDeleteNote.window != null){
+                dialogDeleteNote.window!!.setBackgroundDrawable(ColorDrawable(0))
+            }
+            view.findViewById<TextView>(R.id.textDeleteNote).setOnClickListener(){
+                class DeleteNoteTask : AsyncTask<Void, Void, Void>() {
+                    override fun doInBackground(vararg params: Void?): Void? {
+                        NotesDatabase.db.getDatabase(applicationContext).noteDao()
+                                .deleteNote(alreadyAvailableNote)
+                        return null
+                    }
+
+                    override fun onPostExecute(result: Void?) {
+                        super.onPostExecute(result)
+                        var intent: Intent = Intent()
+                        intent.putExtra("isNoteDeleted", true)
+                        setResult(RESULT_OK, intent)
+                        finish()
+                    }
+                }
+
+                DeleteNoteTask().execute()
+            }
+            view.findViewById<TextView>(R.id.textCancel).setOnClickListener(){
+                dialogDeleteNote.dismiss()
+            }
+        //}
+        dialogDeleteNote.show()
     }
 
     private fun setSubtitleIndicatorColor() {
@@ -223,6 +330,7 @@ class CreateNoteActivity : AppCompatActivity() {
                         var bitmap: Bitmap = BitmapFactory.decodeStream(inputStream)
                         imageNote.setImageBitmap(bitmap)
                         imageNote.visibility = View.VISIBLE
+                        findViewById<ImageView>(R.id.imageRemoveImage).visibility = View.VISIBLE
 
                         selectedImagePath = getPathFromUri(selectedImageUri)
 
