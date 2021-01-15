@@ -3,6 +3,8 @@ package com.example.notas.adapters
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.GradientDrawable
 import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
@@ -19,7 +21,7 @@ import java.util.logging.Handler
 
 class NotesAdapter(notelist: List<Note>, notesListener: NotesListener) : RecyclerView.Adapter<NotesAdapter.NoteViewHolder>() {
     private var notes: List<Note>? = notelist
-    var notesListener: NotesListener
+    var notesListener: NotesListener = notesListener
     private var timer: Timer? = null
     private var notesSource: List<Note>
 
@@ -63,6 +65,7 @@ class NotesAdapter(notelist: List<Note>, notesListener: NotesListener) : Recycle
         var textTitle: TextView
         var textSubtitle: TextView
         var textDateTime: TextView
+        var textNoteText: TextView
         lateinit var layoutNote : LinearLayout
         lateinit var imageNote : RoundedImageView
 
@@ -76,15 +79,16 @@ class NotesAdapter(notelist: List<Note>, notesListener: NotesListener) : Recycle
             }
             textDateTime.text = note.getDateTime()
 
-            var gradientDrawable : ColorDrawable = layoutNote.background as ColorDrawable
-            //if (note.getColor() != null){
-                //gradientDrawable.color = Color.parseColor(note.getColor())
-                //System.out.println(gradientDrawable.color)
-                (layoutNote.background as ColorDrawable).color = Color.parseColor(note.getColor())
-            System.out.println(Color.parseColor(note.getColor()))
-            //} else {
-                //gradientDrawable.color = Color.parseColor("#FFFFFF")
-            //}
+            if (note.getNoteText()!!.trim().isEmpty()){
+                textNoteText.visibility = View.GONE
+            } else {
+                textNoteText.text = note.getNoteText()
+            }
+
+            var gd: GradientDrawable = layoutNote.background as GradientDrawable
+            gd.setColor(Color.parseColor(note.getColor()))
+            System.out.println("Color implementado: " + note.getColor())
+
             if (note.getImagePath() != null) {
                 imageNote.setImageBitmap(BitmapFactory.decodeFile(note.getImagePath()))
                 imageNote.visibility = View.VISIBLE
@@ -97,6 +101,7 @@ class NotesAdapter(notelist: List<Note>, notesListener: NotesListener) : Recycle
             textTitle = itemView.findViewById(R.id.textTitle)
             textSubtitle = itemView.findViewById(R.id.textSubtitle)
             textDateTime = itemView.findViewById(R.id.textDateTime)
+            textNoteText = itemView.findViewById(R.id.textNoteText)
             layoutNote = itemView.findViewById(R.id.layoutNote)
             imageNote = itemView.findViewById(R.id.imageNote)
         }

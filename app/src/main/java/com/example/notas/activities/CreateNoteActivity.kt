@@ -10,6 +10,7 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.AsyncTask
+import android.os.AsyncTask.execute
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Patterns
@@ -21,12 +22,14 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.toDrawable
 
 import com.example.notas.R
 import com.example.notas.database.NotesDatabase
 import com.example.notas.database.NotesDatabase.db.getDatabase
 import com.example.notas.entities.Note
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import top.defaults.colorpicker.ColorPickerPopup
 import java.io.InputStream
 import java.text.SimpleDateFormat
 import java.util.*
@@ -82,10 +85,10 @@ class CreateNoteActivity : AppCompatActivity() {
 
         selectedColor = "#333333" //Default note color
         selectedImagePath = ""
-        System.out.println("nice")
         if (intent.getBooleanExtra("isViewOrUpdate", false)){
             alreadyAvailableNote = intent.getSerializableExtra("note") as Note
             setViewOrUpdateNote()
+
         }else{
             alreadyAvailableNote = Note()
         }
@@ -100,6 +103,21 @@ class CreateNoteActivity : AppCompatActivity() {
             imageNote.visibility = View.GONE
             findViewById<ImageView>(R.id.imageRemoveImage).visibility = View.GONE
             selectedImagePath = ""
+        }
+
+        if (intent.getBooleanExtra("isFromQuickAction", false)){
+            var type: String? = intent.getStringExtra("quickActionType")
+            if(type != null){
+                if (type.equals("image")){
+                    selectedImagePath = intent.getStringExtra("imagePath").toString()
+                    imageNote.setImageBitmap(BitmapFactory.decodeFile(selectedImagePath))
+                    imageNote.visibility = View.VISIBLE
+                    findViewById<ImageView>(R.id.imageRemoveImage).visibility = View.VISIBLE
+                } else if (type.equals("URL")){
+                    textWebURL.text = intent.getStringExtra("URL")
+                    layoutWebURL.visibility = View.VISIBLE
+                }
+            }
         }
 
         initMiscellaneous()
@@ -123,6 +141,7 @@ class CreateNoteActivity : AppCompatActivity() {
             layoutWebURL.visibility = View.VISIBLE
             textWebURL.text = alreadyAvailableNote.getWebLink()
         }
+
     }
 
     private fun saveNote() {
@@ -147,6 +166,20 @@ class CreateNoteActivity : AppCompatActivity() {
         //OnConflictStrategy is REPLACE meaning if new note has the same id of other in the db it will be replaced (updated)
         if (alreadyAvailableNote != null){
             note.setId(alreadyAvailableNote.getId())
+
+            class UpdateNoteTask : AsyncTask<Void, Void, Void>() {
+                override fun doInBackground(vararg params: Void?): Void? {
+                    return null
+                }
+
+                override fun onPostExecute(result: Void?) {
+                    super.onPostExecute(result)
+                    var intent: Intent = Intent()
+                    setResult(RESULT_OK, intent)
+                    finish()
+                }
+            }
+            UpdateNoteTask().execute()
         }
 
         class SaveNoteTask : AsyncTask<Void, Void, Void>() {
@@ -191,7 +224,7 @@ class CreateNoteActivity : AppCompatActivity() {
         }
 
         layoutMiscellaneous.findViewById<View>(R.id.viewColor2).setOnClickListener {
-            selectedColor = "#FDBE3B"
+            selectedColor = "#FF4842"
             imageColor1.setImageResource(0)
             imageColor2.setImageResource(R.drawable.ic_done)
             imageColor3.setImageResource(0)
@@ -221,10 +254,10 @@ class CreateNoteActivity : AppCompatActivity() {
         if (alreadyAvailableNote.getColor() != null && !alreadyAvailableNote.getColor()!!.trim().isEmpty()){
             when(alreadyAvailableNote.getColor()){
 
-                "#333333" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor1)
-                "#FDBE3B" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor2)
-                "#FF4842" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor3)
-                "#3A52FC" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor4)
+                "#333333" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor1).performClick()
+                "#FDBE3B" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor2).performClick()
+                "#FF4842" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor3).performClick()
+                "#3A52FC" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor4).performClick()
             }
             setSubtitleIndicatorColor()
         }
@@ -253,9 +286,35 @@ class CreateNoteActivity : AppCompatActivity() {
                 bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 showDeleteNoteDialog()
             }
-
         }
-    }
+
+        var observer: ColorPickerPopup.ColorPickerObserver
+        var mDefaultColor = 0;
+        layoutMiscellaneous.findViewById<TextView>(R.id.textColorPicker).setOnClickListener(){ v ->
+            ColorPickerPopup.Builder(this).initialColor(Color.RED) // set initial color of the color  picker dialog
+                .enableBrightness(true) // enable color brightness slider or not
+                .enableAlpha(true) // enable color alpha changer on slider or not
+                .okTitle("Choose") // this is top right choose button
+                .cancelTitle("Cancel") // this is top left Cancel button which closes the
+                .showIndicator(
+                    true) // this is the small box which shows the chosen color by user at the
+                // bottom of the cancel button
+                .showValue(true) // this is the value which shows the selected color hex code
+                // the above all values can be made false to disable them on the color picker dialog.
+                .build()
+                .show(v, object : ColorPickerPopup.ColorPickerObserver() {
+                    override fun onColorPicked(color: Int) {
+                        mDefaultColor = color
+                        selectedColor = Integer.toHexString(color).replaceFirst("ff","#")
+                        System.out.println("Color:" + selectedColor)
+                    }
+                })
+
+            }
+        }
+
+
+
 
     private fun showDeleteNoteDialog(){
         //if (dialogDeleteNote == null){
@@ -300,7 +359,7 @@ class CreateNoteActivity : AppCompatActivity() {
         gradientDrawable.setColor(Color.parseColor(selectedColor))
     }
 
-    fun selectImage() {
+    private fun selectImage() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE)

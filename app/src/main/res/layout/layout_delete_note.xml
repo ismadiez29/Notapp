@@ -80,6 +80,7 @@
         android:includeFontPadding="false"
         android:padding="@dimen/_8sdp"
         android:text="@string/cancel_dialog"
+        android:textAllCaps="true"
         android:textColor="@color/colorAccent"
         android:textSize="@dimen/_13ssp"
         app:layout_constraintBottom_toBottomOf="parent"
