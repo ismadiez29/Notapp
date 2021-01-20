@@ -4,10 +4,12 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.example.notas.dao.DeletedNoteDao
 import com.example.notas.dao.NoteDao
+import com.example.notas.entities.DeletedNotes
 import com.example.notas.entities.Note
 
-@Database(entities = [Note::class], version = 1, exportSchema = false)
+@Database(entities = [Note::class, DeletedNotes::class], version = 1, exportSchema = false)
 abstract class NotesDatabase : RoomDatabase() {
 
     var notesDatabase : NotesDatabase? = null
@@ -34,4 +36,5 @@ abstract class NotesDatabase : RoomDatabase() {
         return notesDatabase
     }
     abstract fun noteDao(): NoteDao
+    abstract fun DeletedNoteDao(): DeletedNoteDao
 }

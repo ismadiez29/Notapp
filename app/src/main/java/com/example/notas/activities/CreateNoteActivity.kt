@@ -212,6 +212,8 @@ class CreateNoteActivity : AppCompatActivity() {
         val imageColor2: ImageView = layoutMiscellaneous.findViewById(R.id.imageColor2)
         val imageColor3: ImageView = layoutMiscellaneous.findViewById(R.id.imageColor3)
         val imageColor4: ImageView = layoutMiscellaneous.findViewById(R.id.imageColor4)
+        val imageColor5: ImageView = layoutMiscellaneous.findViewById(R.id.imageColor5)
+        val imageColor6: ImageView = layoutMiscellaneous.findViewById(R.id.imageColor6)
 
 
         layoutMiscellaneous.findViewById<View>(R.id.viewColor1).setOnClickListener {
@@ -220,15 +222,19 @@ class CreateNoteActivity : AppCompatActivity() {
             imageColor2.setImageResource(0)
             imageColor3.setImageResource(0)
             imageColor4.setImageResource(0)
+            imageColor5.setImageResource(0)
+            imageColor6.setImageResource(0)
             setSubtitleIndicatorColor()
         }
 
         layoutMiscellaneous.findViewById<View>(R.id.viewColor2).setOnClickListener {
-            selectedColor = "#FF4842"
+            selectedColor = "#FDBE3B"
             imageColor1.setImageResource(0)
             imageColor2.setImageResource(R.drawable.ic_done)
             imageColor3.setImageResource(0)
             imageColor4.setImageResource(0)
+            imageColor5.setImageResource(0)
+            imageColor6.setImageResource(0)
             setSubtitleIndicatorColor()
 
         }
@@ -239,6 +245,8 @@ class CreateNoteActivity : AppCompatActivity() {
             imageColor2.setImageResource(0)
             imageColor3.setImageResource(R.drawable.ic_done)
             imageColor4.setImageResource(0)
+            imageColor5.setImageResource(0)
+            imageColor6.setImageResource(0)
             setSubtitleIndicatorColor()
         }
 
@@ -248,6 +256,30 @@ class CreateNoteActivity : AppCompatActivity() {
             imageColor2.setImageResource(0)
             imageColor3.setImageResource(0)
             imageColor4.setImageResource(R.drawable.ic_done)
+            imageColor5.setImageResource(0)
+            imageColor6.setImageResource(0)
+            setSubtitleIndicatorColor()
+        }
+
+        layoutMiscellaneous.findViewById<View>(R.id.viewColor5).setOnClickListener {
+            selectedColor = "#884EA0"
+            imageColor1.setImageResource(0)
+            imageColor2.setImageResource(0)
+            imageColor3.setImageResource(0)
+            imageColor4.setImageResource(0)
+            imageColor5.setImageResource(R.drawable.ic_done)
+            imageColor6.setImageResource(0)
+            setSubtitleIndicatorColor()
+        }
+
+        layoutMiscellaneous.findViewById<View>(R.id.viewColor6).setOnClickListener {
+            selectedColor = "#17A589"
+            imageColor1.setImageResource(0)
+            imageColor2.setImageResource(0)
+            imageColor3.setImageResource(0)
+            imageColor4.setImageResource(0)
+            imageColor5.setImageResource(0)
+            imageColor6.setImageResource(R.drawable.ic_done)
             setSubtitleIndicatorColor()
         }
 
@@ -258,6 +290,8 @@ class CreateNoteActivity : AppCompatActivity() {
                 "#FDBE3B" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor2).performClick()
                 "#FF4842" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor3).performClick()
                 "#3A52FC" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor4).performClick()
+                "#884EA0" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor5).performClick()
+                "#17A589" -> layoutMiscellaneous.findViewById<View>(R.id.viewColor6).performClick()
             }
             setSubtitleIndicatorColor()
         }
@@ -331,6 +365,7 @@ class CreateNoteActivity : AppCompatActivity() {
             view.findViewById<TextView>(R.id.textDeleteNote).setOnClickListener(){
                 class DeleteNoteTask : AsyncTask<Void, Void, Void>() {
                     override fun doInBackground(vararg params: Void?): Void? {
+                        getDatabase(applicationContext).DeletedNoteDao().insertDeletedNote(alreadyAvailableNote)
                         NotesDatabase.db.getDatabase(applicationContext).noteDao()
                                 .deleteNote(alreadyAvailableNote)
                         return null

@@ -3,18 +3,56 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
+    <group
+        android:checkableBehavior="single"
+        android:id="@+id/menu_1">
         <item
             android:id="@+id/nav_home"
-            android:icon="@drawable/ic_menu_camera"
-            android:title="@string/menu_home" />
+            android:icon="@drawable/ic_notes"
+            android:title="@string/notes"/>
         <item
-            android:id="@+id/nav_gallery"
-            android:icon="@drawable/ic_menu_gallery"
-            android:title="@string/menu_gallery" />
+            android:id="@+id/nav_notifications"
+            android:icon="@drawable/ic_notifications"
+            android:title="Notifications - Coming Soon"/>
         <item
-            android:id="@+id/nav_slideshow"
-            android:icon="@drawable/ic_menu_slideshow"
-            android:title="@string/menu_slideshow" />
+            android:id="@+id/nav_labels"
+            android:icon="@drawable/ic_label"
+            android:title="Labels - Coming Soon"/>
+
+        <item
+            android:id="@+id/nav_folders"
+            android:icon="@drawable/ic_folder"
+            android:title="Folders - Coming Soon"/>
+
+    </group>
+
+    <group
+        android:checkableBehavior="none"
+        android:id="@+id/menu_2">
+
+        <item
+            android:id="@+id/nav_archivedNotes"
+            android:icon="@drawable/ic_archive"
+            android:title="Archived Notes - Coming Soon"/>
+
+        <item
+            android:id="@+id/nav_deletedNotes"
+            android:icon="@drawable/ic_delete"
+            android:title="Deleted Notes - Coming Soon"/>
+    </group>
+
+    <group
+        android:checkableBehavior="none"
+        android:id="@+id/menu_3">
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/ic_settings"
+            android:title="Settings - Coming Soon"/>
+
+        <item
+            android:id="@+id/nav_help"
+            android:icon="@drawable/ic_help"
+            android:title="Help and Feedback - Coming Soon"/>
     </group>
 </menu>

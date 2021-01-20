@@ -16,7 +16,7 @@
         android:fontFamily="@font/ubuntu_medium"
         android:layout_gravity="center"
         android:includeFontPadding="false"
-        android:text="@string/miscellaneous"
+        android:text="@string/options"
         android:textColor="@color/colorWhite"
         android:textSize="@dimen/_13ssp"/>
 <LinearLayout
@@ -143,12 +143,12 @@
                     android:id="@+id/viewColor5"
                     android:layout_width="@dimen/_35sdp"
                     android:layout_height="@dimen/_35sdp"
-                    android:background="@drawable/background_note_color_4" />
+                    android:background="@drawable/background_note_color_5" />
 
                 <ImageView
                     android:id="@+id/imageColor5"
-                    android:layout_width="match_parent"
-                    android:layout_height="49dp"
+                    android:layout_width="@dimen/_35sdp"
+                    android:layout_height="@dimen/_35sdp"
                     android:contentDescription="@string/app_name"
                     android:padding="@dimen/_10sdp"
                     android:tint="@color/colorWhite" />
@@ -166,7 +166,7 @@
                     android:id="@+id/viewColor6"
                     android:layout_width="@dimen/_35sdp"
                     android:layout_height="@dimen/_35sdp"
-                    android:background="@drawable/background_note_color_4" />
+                    android:background="@drawable/background_note_color_6" />
 
                 <ImageView
                     android:id="@+id/imageColor6"
