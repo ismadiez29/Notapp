@@ -28,6 +28,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.view.menu.MenuView
 import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -38,6 +39,7 @@ import com.example.notas.adapters.NotesAdapter
 import com.example.notas.database.NotesDatabase
 import com.example.notas.entities.Note
 import com.example.notas.listeners.NotesListener
+import com.google.android.material.internal.NavigationMenuItemView
 import java.lang.Exception
 
 class MainActivity : AppCompatActivity(), NotesListener {
@@ -73,7 +75,8 @@ class MainActivity : AppCompatActivity(), NotesListener {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow), drawerLayout)
+                R.id.nav_home, R.id.nav_notifications, R.id.nav_labels, R.id.nav_folders,
+                R.id.nav_archivedNotes,R.id.nav_deletedNotes, R.id.nav_settings), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
@@ -126,6 +129,20 @@ class MainActivity : AppCompatActivity(), NotesListener {
 
         findViewById<ImageView>(R.id.imageAddWebLink).setOnClickListener(){
             showAddURLDialog()
+        }
+
+        navView.setNavigationItemSelectedListener {
+            System.out.println(findViewById<NavigationMenuItemView>(R.id.nav_deletedNotes))
+
+            when (it.itemId){
+                R.id.nav_deletedNotes -> {intent = Intent(this, DeletedNotesActivity::class.java)
+                    System.out.println("Entra")
+                    startActivity(intent)
+                    true
+                }
+
+                else -> false
+            }
         }
 
     }

@@ -6,10 +6,10 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.notas.dao.DeletedNoteDao
 import com.example.notas.dao.NoteDao
-import com.example.notas.entities.DeletedNotes
+import com.example.notas.entities.DeletedNote
 import com.example.notas.entities.Note
 
-@Database(entities = [Note::class, DeletedNotes::class], version = 1, exportSchema = false)
+@Database(entities = [Note::class, DeletedNote::class], version = 1, exportSchema = false)
 abstract class NotesDatabase : RoomDatabase() {
 
     var notesDatabase : NotesDatabase? = null

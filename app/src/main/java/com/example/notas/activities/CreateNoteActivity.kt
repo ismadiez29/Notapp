@@ -27,6 +27,7 @@ import androidx.core.graphics.drawable.toDrawable
 import com.example.notas.R
 import com.example.notas.database.NotesDatabase
 import com.example.notas.database.NotesDatabase.db.getDatabase
+import com.example.notas.entities.DeletedNote
 import com.example.notas.entities.Note
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import top.defaults.colorpicker.ColorPickerPopup
@@ -365,7 +366,17 @@ class CreateNoteActivity : AppCompatActivity() {
             view.findViewById<TextView>(R.id.textDeleteNote).setOnClickListener(){
                 class DeleteNoteTask : AsyncTask<Void, Void, Void>() {
                     override fun doInBackground(vararg params: Void?): Void? {
-                        getDatabase(applicationContext).DeletedNoteDao().insertDeletedNote(alreadyAvailableNote)
+                        var deletedNote: DeletedNote = DeletedNote()
+
+                        deletedNote.setTitle(alreadyAvailableNote.getTitle())
+                        deletedNote.setSubtitle(alreadyAvailableNote.getSubtitle())
+                        deletedNote.setNoteText(alreadyAvailableNote.getNoteText())
+                        deletedNote.setColor(alreadyAvailableNote.getColor())
+                        deletedNote.setDateTime(alreadyAvailableNote.getDateTime())
+                        deletedNote.setImagePath(alreadyAvailableNote.getImagePath())
+                        deletedNote.setWebLink(alreadyAvailableNote.getWebLink())
+
+                        getDatabase(applicationContext).DeletedNoteDao().insertDeletedNote(deletedNote)
                         NotesDatabase.db.getDatabase(applicationContext).noteDao()
                                 .deleteNote(alreadyAvailableNote)
                         return null

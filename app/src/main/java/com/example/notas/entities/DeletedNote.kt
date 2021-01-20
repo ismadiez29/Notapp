@@ -7,7 +7,7 @@ import java.io.Serializable
 
 
 @Entity(tableName = "deletedNotes")
-class DeletedNotes: Serializable {
+class DeletedNote: Serializable {
 
     @PrimaryKey(autoGenerate = true)
     private var id = 0
