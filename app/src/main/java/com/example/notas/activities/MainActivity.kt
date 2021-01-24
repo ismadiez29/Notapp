@@ -90,6 +90,7 @@ class MainActivity : AppCompatActivity(), NotesListener {
                     transaction.replace(R.id.nav_host_fragment, DeletedNotesFragment())
                     transaction.commit()
                     drawerLayout.closeDrawers()
+                    toolbar.title = "Deleted Notes"
                     true
                 }
 
@@ -100,6 +101,8 @@ class MainActivity : AppCompatActivity(), NotesListener {
                     transaction.replace(R.id.nav_host_fragment, MainFragment())
                     transaction.commit()
                     drawerLayout.closeDrawers()
+                    toolbar.title = "Notes"
+
 
                     true
                 }
@@ -111,6 +114,7 @@ class MainActivity : AppCompatActivity(), NotesListener {
                     transaction.replace(R.id.nav_host_fragment, ArchivedNotesFragment())
                     transaction.commit()
                     drawerLayout.closeDrawers()
+                    toolbar.title = "Archived Notes"
 
                     true
                 }

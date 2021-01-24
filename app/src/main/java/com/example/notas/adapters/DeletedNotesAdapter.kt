@@ -14,12 +14,12 @@ import com.example.notas.entities.DeletedNote
 import com.example.notas.listeners.NotesListener
 import com.makeramen.roundedimageview.RoundedImageView
 
-class DeletedNotesAdapter (archivedNoteList: List<DeletedNote>, notesListener: NotesListener) : RecyclerView.Adapter<DeletedNotesAdapter.DeleteNoteViewHolder>() {
-    private var deletedNotes: List<DeletedNote>? = archivedNoteList
+class DeletedNotesAdapter (deletedNoteList: List<DeletedNote>, notesListener: NotesListener) : RecyclerView.Adapter<DeletedNotesAdapter.DeleteNoteViewHolder>() {
+    private var deletedNotes: List<DeletedNote>? = deletedNoteList
     var notesListener: NotesListener = notesListener
 
     init {
-        this.deletedNotes = archivedNoteList
+        this.deletedNotes = deletedNoteList
         this.notesListener = notesListener
     }
 
