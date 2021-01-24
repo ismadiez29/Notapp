@@ -10,12 +10,22 @@
     tools:context=".activities.MainActivity"
     tools:openDrawer="start">
 
-
     <include
+        android:id="@+id/app_bar"
         layout="@layout/app_bar_main"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 
+    <FrameLayout
+        android:id="@+id/fragment_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="@id/app_bar"
+        app:layout_constraintEnd_toEndOf="parent">
+
+    </FrameLayout>
+
+    <!--
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
@@ -139,7 +149,9 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/layoutQuickActions"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>-->
+
+
 
     <com.google.android.material.navigation.NavigationView
         android:id="@+id/nav_view"

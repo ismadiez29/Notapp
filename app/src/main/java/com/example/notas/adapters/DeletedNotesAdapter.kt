@@ -34,15 +34,12 @@ class DeletedNotesAdapter (notelist: List<DeletedNote>, notesListener: NotesList
     }
 
     override fun onBindViewHolder(holderDelete: DeletedNotesAdapter.DeleteNoteViewHolder, position: Int) {
-        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         holderDelete.setNote(deletedNotes!![position])
         holderDelete.layoutNote.setOnClickListener(){
             notesListener.onDeletedNoteClicked(deletedNotes!!.get(position), position)
         }    }
 
     override fun getItemCount(): Int {
-        System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA")
-        System.out.println(deletedNotes?.size)
         return deletedNotes!!.size
     }
 
@@ -58,7 +55,7 @@ class DeletedNotesAdapter (notelist: List<DeletedNote>, notesListener: NotesList
         fun setNote(note: DeletedNote) {
             System.out.println("------------------------------------------------------")
             textTitle.text = note.getTitle()
-/*            if (note.getSubtitle()!!.trim { it <= ' ' }.isEmpty()) {
+            if (note.getSubtitle()!!.trim { it <= ' ' }.isEmpty()) {
                 textSubtitle.visibility = View.GONE
             } else {
                 textSubtitle.text = note.getSubtitle()
@@ -69,7 +66,7 @@ class DeletedNotesAdapter (notelist: List<DeletedNote>, notesListener: NotesList
                 textNoteText.visibility = View.GONE
             } else {
                 textNoteText.text = note.getNoteText()
-            }*/
+            }
 
             var gd: GradientDrawable = layoutNote.background as GradientDrawable
             gd.setColor(Color.parseColor(note.getColor()))

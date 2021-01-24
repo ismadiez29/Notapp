@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/deleted_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="ui.deletedNotes.DeletedNotesFragment"
+    android:background="@color/colorPrimary"
+    android:fitsSystemWindows="true"
+    tools:openDrawer="start">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/deletedNotesRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingStart="0dp"
+        android:paddingEnd="@dimen/_12sdp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/textDeleteMessage"
+        />
+
+    <TextView
+        android:id="@+id/textDeleteMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/notes_here_will_be_deleted_in_30_days"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/_13ssp"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/_45sdp"
+        android:layout_marginBottom="@dimen/_35sdp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/deletedNotesRecyclerView"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</FrameLayout>

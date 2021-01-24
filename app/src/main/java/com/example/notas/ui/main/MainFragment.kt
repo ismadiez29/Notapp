@@ -1,4 +1,4 @@
-package com.example.notas.activities
+package com.example.notas.ui.main
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,31 +18,27 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.notas.R
+import com.example.notas.activities.CreateNoteActivity
+import com.example.notas.activities.MainActivity
 import com.example.notas.adapters.NotesAdapter
 import com.example.notas.database.NotesDatabase
 import com.example.notas.entities.Note
 import com.example.notas.listeners.NotesListener
 import com.example.notas.ui.deletedNotes.DeletedNotesFragment
-import com.example.notas.ui.main.MainFragment
-import com.google.android.material.internal.NavigationMenuItemView
 import com.google.android.material.navigation.NavigationView
 
-
-class MainActivity : AppCompatActivity(), NotesListener {
+class MainFragment: Fragment(), NotesListener {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var notesRecyclerView: RecyclerView
@@ -60,76 +56,25 @@ class MainActivity : AppCompatActivity(), NotesListener {
         const val REQUEST_CODE_STORAGE_PERMISSION = 5
     }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        val toolbar: Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val x = inflater.inflate(R.layout.fragment_main, container, false)
 
-        val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
-        val navView: NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.nav_home, R.id.nav_notifications, R.id.nav_labels, R.id.nav_folders,
-                R.id.nav_archivedNotes, R.id.nav_deletedNotes, R.id.nav_settings), drawerLayout)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-
-        navView.setNavigationItemSelectedListener {
-
-            when (it.itemId) {
-
-                R.id.nav_deletedNotes -> {
-
-                    val manager: FragmentManager = supportFragmentManager
-                    val transaction: FragmentTransaction = manager.beginTransaction()
-                    transaction.replace(R.id.nav_host_fragment, DeletedNotesFragment())
-                    transaction.commit()
-                    drawerLayout.closeDrawers()
-                    true
-                }
-
-                R.id.nav_home -> {
-
-                    val manager: FragmentManager = supportFragmentManager
-                    val transaction: FragmentTransaction = manager.beginTransaction()
-                    transaction.replace(R.id.nav_host_fragment, MainFragment())
-                    transaction.commit()
-                    drawerLayout.closeDrawers()
-
-                    true
-                }
-
-                else -> false
-            }
-        }
-
-
-        val manager: FragmentManager = supportFragmentManager
-        val transaction: FragmentTransaction = manager.beginTransaction()
-        transaction.add(R.id.nav_host_fragment, MainFragment())
-        transaction.commit()
-    }
-
-/*
-        var imageAddNoteMain: ImageView = findViewById(R.id.imageAddNoteMain)
+        var imageAddNoteMain: ImageView = x.findViewById(R.id.imageAddNoteMain)
 
         imageAddNoteMain.setOnClickListener {
-            val intent = Intent(this, CreateNoteActivity::class.java)
-            startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
+            val intent = Intent(activity, CreateNoteActivity::class.java)
+            startActivityForResult(intent, MainActivity.REQUEST_CODE_ADD_NOTE)
         }
-        notesRecyclerView = findViewById(R.id.notesRecyclerView)
+        notesRecyclerView = x.findViewById(R.id.notesRecyclerView)
         notesRecyclerView.layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
 
         notelist = ArrayList<Note>()
         notesAdapter = NotesAdapter(notelist as ArrayList<Note>, this)
         notesRecyclerView.adapter = notesAdapter
 
-        getNotes(REQUEST_CODE_SHOW_NOTES, false)
+        getNotes(MainActivity.REQUEST_CODE_SHOW_NOTES, false)
 
-        inputSearch = findViewById(R.id.inputSearch)
+        inputSearch = x.findViewById(R.id.inputSearch)
         inputSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
             }
@@ -144,33 +89,35 @@ class MainActivity : AppCompatActivity(), NotesListener {
                 }
             }
         })
-        findViewById<ImageView>(R.id.imageAddNote).setOnClickListener(){
-            val intent = Intent(this, CreateNoteActivity::class.java)
-            startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
+        x.findViewById<ImageView>(R.id.imageAddNote).setOnClickListener(){
+            val intent = Intent(activity, CreateNoteActivity::class.java)
+            startActivityForResult(intent, MainActivity.REQUEST_CODE_ADD_NOTE)
         }
 
-        findViewById<ImageView>(R.id.imageAddImage).setOnClickListener(){
+        x.findViewById<ImageView>(R.id.imageAddImage).setOnClickListener(){
             if (ContextCompat.checkSelfPermission(
-                            applicationContext, android.Manifest.permission.READ_EXTERNAL_STORAGE
+                            requireContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE
                     ) != PackageManager.PERMISSION_GRANTED) {
-                ActivityCompat.requestPermissions(this,
+                ActivityCompat.requestPermissions(requireActivity(),
                         Array(1) { android.Manifest.permission.READ_EXTERNAL_STORAGE },
-                        REQUEST_CODE_STORAGE_PERMISSION)
+                        MainActivity.REQUEST_CODE_STORAGE_PERMISSION)
             } else {
                 selectImage()
             }
         }
 
-        findViewById<ImageView>(R.id.imageAddWebLink).setOnClickListener(){
+        x.findViewById<ImageView>(R.id.imageAddWebLink).setOnClickListener(){
             showAddURLDialog()
         }
 
+        return x
     }
 
     private fun selectImage() {
+
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(intent, REQUEST_CODE_SELECT_IMAGE)
+        if (context?.let { intent.resolveActivity(it.packageManager) } != null) {
+            startActivityForResult(intent, MainActivity.REQUEST_CODE_SELECT_IMAGE)
         }
     }
 
@@ -180,15 +127,15 @@ class MainActivity : AppCompatActivity(), NotesListener {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 selectImage()
             } else {
-                Toast.makeText(this, "Permission Denied!", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "Permission Denied!", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
     fun getPathFromUri(contentUri: Uri): String {
         var filePath: String
-        var cursor: Cursor? = contentResolver
-                .query(contentUri, null, null, null, null)
+        var cursor: Cursor? = context?.contentResolver
+                ?.query(contentUri, null, null, null, null)
         if (cursor == null) {
             filePath = contentUri.path.toString()
         } else {
@@ -198,49 +145,36 @@ class MainActivity : AppCompatActivity(), NotesListener {
             cursor.close()
         }
         return filePath
-    }*/
-
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
     }
 
-    override fun onSupportNavigateUp(): Boolean {
-        val navController = findNavController(R.id.nav_host_fragment)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-    }
-
-
-/*
     override fun onNoteClicked(note: Note, position: Int){
         noteClickedPosition = position
-        val intent = Intent(this, CreateNoteActivity::class.java)
+        val intent = Intent(context, CreateNoteActivity::class.java)
         intent.putExtra("isViewOrUpdate", true)
         intent.putExtra("note", note)
-        startActivityForResult(intent, REQUEST_CODE_UPDATE_NOTE)
+        startActivityForResult(intent, MainActivity.REQUEST_CODE_UPDATE_NOTE)
 
     }
 
     private fun getNotes(requestCode: Int, isNoteDelete: Boolean) {
         class GetNoteTask : AsyncTask<Void, Void, List<Note>>() {
             override fun doInBackground(vararg params: Void?): List<Note> {
-                return NotesDatabase.db.getDatabase(applicationContext).noteDao().getAllNotes();
+                return NotesDatabase.db.getDatabase(context!!).noteDao().getAllNotes();
 
             }
 
             override fun onPostExecute(notes: List<Note>) {
                 super.onPostExecute(notes)
-                if (requestCode == REQUEST_CODE_SHOW_NOTES) {
+                if (requestCode == MainActivity.REQUEST_CODE_SHOW_NOTES) {
                     notelist.addAll(notes)
                     notesAdapter.notifyDataSetChanged();
-                } else if (requestCode == REQUEST_CODE_ADD_NOTE){
+                } else if (requestCode == MainActivity.REQUEST_CODE_ADD_NOTE){
                     notelist.add(0, notes[0])
                     notesAdapter.notifyItemInserted(0)
                     notesRecyclerView.smoothScrollToPosition(0)
-                }else if (requestCode == REQUEST_CODE_UPDATE_NOTE){
+                }else if (requestCode == MainActivity.REQUEST_CODE_UPDATE_NOTE){
                     System.out.println("pasa por el update")
-                        notelist.removeAt(noteClickedPosition)
+                    notelist.removeAt(noteClickedPosition)
                     if (isNoteDelete){
                         notesAdapter.notifyItemRemoved(noteClickedPosition)
                     }else{
@@ -255,25 +189,25 @@ class MainActivity : AppCompatActivity(), NotesListener {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE_ADD_NOTE && resultCode == RESULT_OK) {
-            getNotes(REQUEST_CODE_ADD_NOTE, false)
-        }else if( requestCode == REQUEST_CODE_UPDATE_NOTE && resultCode == RESULT_OK){
+        if (requestCode == MainActivity.REQUEST_CODE_ADD_NOTE && resultCode == AppCompatActivity.RESULT_OK) {
+            getNotes(MainActivity.REQUEST_CODE_ADD_NOTE, false)
+        }else if( requestCode == MainActivity.REQUEST_CODE_UPDATE_NOTE && resultCode == AppCompatActivity.RESULT_OK){
             if(data != null){
-                getNotes(REQUEST_CODE_UPDATE_NOTE, data.getBooleanExtra("isNoteDeleted", false))
+                getNotes(MainActivity.REQUEST_CODE_UPDATE_NOTE, data.getBooleanExtra("isNoteDeleted", false))
             }
-        }else if(requestCode == REQUEST_CODE_SELECT_IMAGE && resultCode == RESULT_OK){
+        }else if(requestCode == MainActivity.REQUEST_CODE_SELECT_IMAGE && resultCode == AppCompatActivity.RESULT_OK){
             if(data != null){
                 var selectedImageUri: Uri? = data.getData()
                 if(selectedImageUri != null){
                     try{
                         var selectedImagePath = getPathFromUri(selectedImageUri)
-                        val intent: Intent = Intent(applicationContext, CreateNoteActivity::class.java)
+                        val intent: Intent = Intent(context, CreateNoteActivity::class.java)
                         intent.putExtra("isFromQuickAction", true)
                         intent.putExtra("quickActionType", "image")
                         intent.putExtra("imagePath", selectedImagePath)
-                        startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
+                        startActivityForResult(intent, MainActivity.REQUEST_CODE_ADD_NOTE)
                     }catch (ex: Exception){
-                        Toast.makeText(this, ex.message, Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, ex.message, Toast.LENGTH_SHORT).show()
                     }
                 }
             }
@@ -282,10 +216,10 @@ class MainActivity : AppCompatActivity(), NotesListener {
 
     fun showAddURLDialog(){
         //if (dialogAddURL == null){
-        var builder : AlertDialog.Builder = AlertDialog.Builder(this)
-        var view : View = LayoutInflater.from(this).inflate(
+        var builder : AlertDialog.Builder = AlertDialog.Builder(requireContext())
+        var view : View = LayoutInflater.from(context).inflate(
                 R.layout.layout_add_url,
-                findViewById<ViewGroup>(R.id.layoutAddUrlContainer)
+                view?.findViewById<ViewGroup>(R.id.layoutAddUrlContainer)
         )
         builder.setView(view)
         dialogAddURL = builder.create()
@@ -297,16 +231,16 @@ class MainActivity : AppCompatActivity(), NotesListener {
 
         view.findViewById<TextView>(R.id.textAdd).setOnClickListener(){
             if (inputURL.text.toString().trim().isEmpty()){
-                Toast.makeText(this, "Enter URL", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "Enter URL", Toast.LENGTH_SHORT).show()
             } else if (!Patterns.WEB_URL.matcher(inputURL.text.toString()).matches()){
-                Toast.makeText(this, "Enter valid URL", Toast.LENGTH_SHORT).show()
+                Toast.makeText(activity, "Enter valid URL", Toast.LENGTH_SHORT).show()
             } else {
                 dialogAddURL.dismiss()
-                val intent: Intent = Intent(applicationContext, CreateNoteActivity::class.java)
+                val intent: Intent = Intent(context, CreateNoteActivity::class.java)
                 intent.putExtra("isFromQuickAction", true)
                 intent.putExtra("quickActionType", "URL")
                 intent.putExtra("URL", inputURL.text.toString())
-                startActivityForResult(intent, REQUEST_CODE_ADD_NOTE)
+                startActivityForResult(intent, MainActivity.REQUEST_CODE_ADD_NOTE)
             }
         }
         view.findViewById<TextView>(R.id.textCancel).setOnClickListener(){
@@ -314,7 +248,5 @@ class MainActivity : AppCompatActivity(), NotesListener {
         }
         //}
         dialogAddURL.show()
-    }*/
-
-
+    }
 }

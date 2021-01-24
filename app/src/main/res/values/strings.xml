@@ -26,4 +26,6 @@
     <string name="options">Options</string>
     <string name="notas">Notas</string>
     <string name="notes">Notes</string>
+    <string name="notes_here_will_be_deleted_in_30_days">Notes here will be deleted in 30 days</string>
+    <string name="deleted_notes">Deleted Notes</string>
 </resources>

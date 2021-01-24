@@ -22,4 +22,13 @@
         android:name="com.example.notas.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+    <fragment
+        android:id="@+id/deletedNotesFragment"
+        android:name="com.example.notas.ui.deletedNotes.DeletedNotesFragment"
+        android:label="DeletedNotesFragment" />
+    <fragment
+        android:id="@+id/mainFragment"
+        android:name="com.example.notas.ui.main.MainFragment"
+        android:label="MainFragment" />
+
 </navigation>

@@ -3,9 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <!--<group
+    <group
         android:checkableBehavior="single"
-        android:id="@+id/menu_1">-->
+        android:id="@+id/menu_1">
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_notes"
@@ -24,11 +24,11 @@
             android:icon="@drawable/ic_folder"
             android:title="Folders - Coming Soon"/>
 
-    <!--</group>-->
+    </group>
 
-    <!--<group
+    <group
         android:checkableBehavior="single"
-        android:id="@+id/menu_2">-->
+        android:id="@+id/menu_2">
 
         <item
             android:id="@+id/nav_archivedNotes"
@@ -38,12 +38,12 @@
         <item
             android:id="@+id/nav_deletedNotes"
             android:icon="@drawable/ic_delete"
-            android:title="Deleted Notes - Coming Soon"/>
-    <!--</group>-->
+            android:title="@string/deleted_notes"/>
+    </group>
 
-    <!--<group
+    <group
         android:checkableBehavior="single"
-        android:id="@+id/menu_3">-->
+        android:id="@+id/menu_3">
 
         <item
             android:id="@+id/nav_settings"
@@ -54,5 +54,5 @@
             android:id="@+id/nav_help"
             android:icon="@drawable/ic_help"
             android:title="Help and Feedback - Coming Soon"/>
-    <!--</group>-->
+    </group>
 </menu>
