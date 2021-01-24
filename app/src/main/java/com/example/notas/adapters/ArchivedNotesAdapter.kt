@@ -10,21 +10,23 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.notas.R
+import com.example.notas.entities.ArchivedNote
 import com.example.notas.entities.DeletedNote
 import com.example.notas.listeners.NotesListener
 import com.makeramen.roundedimageview.RoundedImageView
 
-class DeletedNotesAdapter (archivedNoteList: List<DeletedNote>, notesListener: NotesListener) : RecyclerView.Adapter<DeletedNotesAdapter.DeleteNoteViewHolder>() {
-    private var deletedNotes: List<DeletedNote>? = archivedNoteList
+class ArchivedNotesAdapter(archivedNoteList: List<ArchivedNote>, notesListener: NotesListener) : RecyclerView.Adapter<ArchivedNotesAdapter.ArchivedNoteViewHolder>() {
+
+    private var archivedNotes: List<ArchivedNote>? = archivedNoteList
     var notesListener: NotesListener = notesListener
 
     init {
-        this.deletedNotes = archivedNoteList
+        this.archivedNotes = archivedNoteList
         this.notesListener = notesListener
     }
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DeletedNotesAdapter.DeleteNoteViewHolder {
-        return DeletedNotesAdapter.DeleteNoteViewHolder(
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArchivedNotesAdapter.ArchivedNoteViewHolder {
+        return ArchivedNotesAdapter.ArchivedNoteViewHolder(
                 LayoutInflater.from(parent.context).inflate(
                         R.layout.item_container_note,
                         parent,
@@ -33,17 +35,17 @@ class DeletedNotesAdapter (archivedNoteList: List<DeletedNote>, notesListener: N
         )
     }
 
-    override fun onBindViewHolder(holderDelete: DeletedNotesAdapter.DeleteNoteViewHolder, position: Int) {
-        holderDelete.setNote(deletedNotes!![position])
-        holderDelete.layoutNote.setOnClickListener(){
-            notesListener.onDeletedNoteClicked(deletedNotes!!.get(position), position)
+    override fun onBindViewHolder(holderArchive: ArchivedNotesAdapter.ArchivedNoteViewHolder, position: Int) {
+        holderArchive.setNote(archivedNotes!![position])
+        holderArchive.layoutNote.setOnClickListener(){
+            notesListener.onArchivedNoteClicked(archivedNotes!!.get(position), position)
         }    }
 
     override fun getItemCount(): Int {
-        return deletedNotes!!.size
+        return archivedNotes!!.size
     }
 
-    class DeleteNoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ArchivedNoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var textTitle: TextView
         var textSubtitle: TextView
         var textDateTime: TextView
@@ -52,7 +54,7 @@ class DeletedNotesAdapter (archivedNoteList: List<DeletedNote>, notesListener: N
         lateinit var imageNote : RoundedImageView
 
 
-        fun setNote(note: DeletedNote) {
+        fun setNote(note: ArchivedNote) {
             textTitle.text = note.getTitle()
             if (note.getSubtitle()!!.trim { it <= ' ' }.isEmpty()) {
                 textSubtitle.visibility = View.GONE
@@ -87,4 +89,5 @@ class DeletedNotesAdapter (archivedNoteList: List<DeletedNote>, notesListener: N
             imageNote = itemView.findViewById(R.id.imageNote)
         }
     }
+
 }

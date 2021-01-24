@@ -10,7 +10,6 @@ import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.GradientDrawable
 import android.net.Uri
 import android.os.AsyncTask
-import android.os.AsyncTask.execute
 import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Patterns
@@ -22,11 +21,11 @@ import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.graphics.drawable.toDrawable
 
 import com.example.notas.R
 import com.example.notas.database.NotesDatabase
 import com.example.notas.database.NotesDatabase.db.getDatabase
+import com.example.notas.entities.ArchivedNote
 import com.example.notas.entities.DeletedNote
 import com.example.notas.entities.Note
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -77,6 +76,10 @@ class CreateNoteActivity : AppCompatActivity() {
                 SimpleDateFormat("EEEE, dd MMM yyyy HH:mm", Locale.getDefault())
                         .format(Date())
                 )
+
+        var imageArchive = findViewById<ImageView>(R.id.imageArchive).setOnClickListener(){
+            archiveNote()
+        }
 
         var imageSave: ImageView = findViewById(R.id.imageSave)
 
@@ -493,6 +496,38 @@ class CreateNoteActivity : AppCompatActivity() {
             }
         //}
         dialogAddURL.show()
+    }
+
+    private fun archiveNote(){
+        class ArchiveNoteTask : AsyncTask<Void, Void, Void>() {
+            override fun doInBackground(vararg params: Void?): Void? {
+                var archivedNote: ArchivedNote = ArchivedNote()
+
+                archivedNote.setTitle(alreadyAvailableNote.getTitle())
+                archivedNote.setSubtitle(alreadyAvailableNote.getSubtitle())
+                archivedNote.setNoteText(alreadyAvailableNote.getNoteText())
+                archivedNote.setColor(alreadyAvailableNote.getColor())
+                archivedNote.setDateTime(alreadyAvailableNote.getDateTime())
+                archivedNote.setImagePath(alreadyAvailableNote.getImagePath())
+                archivedNote.setWebLink(alreadyAvailableNote.getWebLink())
+
+                getDatabase(applicationContext).ArchivedNoteDao().insertArchivedNote(archivedNote)
+                NotesDatabase.db.getDatabase(applicationContext).noteDao()
+                        .deleteNote(alreadyAvailableNote)
+                return null
+            }
+
+            override fun onPostExecute(result: Void?) {
+                super.onPostExecute(result)
+                var intent: Intent = Intent()
+                intent.putExtra("isNoteDeleted", true)
+                setResult(RESULT_OK, intent)
+                finish()
+            }
+
+        }
+        ArchiveNoteTask().execute()
+
     }
 
 }

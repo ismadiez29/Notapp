@@ -54,7 +54,7 @@ class DeletedNotesFragment: Fragment(), NotesListener {
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 
-        val x = inflater.inflate(R.layout.deleted_notes, container, false)
+        val x = inflater.inflate(R.layout.fragment_deleted_notes, container, false)
 
         layoutManager = StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL)
         deletedNotesRecyclerView = x.findViewById(R.id.deletedNotesRecyclerView)!!

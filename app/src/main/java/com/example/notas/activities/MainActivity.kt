@@ -32,10 +32,12 @@ import androidx.navigation.ui.setupWithNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
 import com.example.notas.R
+import com.example.notas.adapters.ArchivedNotesAdapter
 import com.example.notas.adapters.NotesAdapter
 import com.example.notas.database.NotesDatabase
 import com.example.notas.entities.Note
 import com.example.notas.listeners.NotesListener
+import com.example.notas.ui.archivedNotes.ArchivedNotesFragment
 import com.example.notas.ui.deletedNotes.DeletedNotesFragment
 import com.example.notas.ui.main.MainFragment
 import com.google.android.material.internal.NavigationMenuItemView
@@ -96,6 +98,17 @@ class MainActivity : AppCompatActivity(), NotesListener {
                     val manager: FragmentManager = supportFragmentManager
                     val transaction: FragmentTransaction = manager.beginTransaction()
                     transaction.replace(R.id.nav_host_fragment, MainFragment())
+                    transaction.commit()
+                    drawerLayout.closeDrawers()
+
+                    true
+                }
+
+                R.id.nav_archivedNotes -> {
+
+                    val manager: FragmentManager = supportFragmentManager
+                    val transaction: FragmentTransaction = manager.beginTransaction()
+                    transaction.replace(R.id.nav_host_fragment, ArchivedNotesFragment())
                     transaction.commit()
                     drawerLayout.closeDrawers()
 

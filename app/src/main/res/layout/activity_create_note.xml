@@ -31,6 +31,20 @@
                 android:tint="@color/colorIcons"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"/>
+
+            <ImageView
+                android:id="@+id/imageArchive"
+                android:layout_width="@dimen/_20sdp"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_marginEnd="@dimen/_12sdp"
+                android:background="@drawable/background_done_button"
+                android:contentDescription="@string/app_name"
+                android:padding="@dimen/_4sdp"
+                android:src="@drawable/ic_archive"
+                android:tint="@color/colorIcons"
+                app:layout_constraintBottom_toBottomOf="@id/imageBack"
+                app:layout_constraintEnd_toStartOf="@id/imageSave"
+                app:layout_constraintTop_toTopOf="@id/imageBack"/>
             
             <ImageView
                 android:id="@+id/imageSave"
